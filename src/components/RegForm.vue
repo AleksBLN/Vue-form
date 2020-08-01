@@ -1,14 +1,13 @@
 <template>
   <div class="wrapper">
       <h1>Регистрация нового клиента</h1>
-        <div 
-            class="message"
-            @click="closeMessage"
-            v-if="isSuccessfull"
-        >
-            <h2>Клиент добавлен</h2>
-            <button>OK</button>
-        </div>
+      <Popup
+
+        @closeElement="closePopup"
+      >
+      <h3>Клиент "{{form.lastName}} {{form.firstName}}" добавлен</h3>
+      </Popup>
+
       <form @submit.prevent="submitHandler">
 
           <fieldset>
@@ -270,10 +269,14 @@
 </template>
 
 <script>
+import Popup from "@/components/Popup"
 import {required, integer} from "vuelidate/lib/validators"
 import {isLengthEqual, isFirstNumberEqual} from "@/validators/validators"
 
 export default {
+    components: {
+        Popup
+    },
     data() {
         return {
             isSuccessfull: false,
@@ -356,11 +359,6 @@ export default {
                         isFirstNumberEqual: isFirstNumberEqual('7'),
                         integer
                     } : {},
-                // phone: {
-                //         isLengthEqual: isLengthEqual(11),
-                //         isFirstNumberEqual: isFirstNumberEqual('7'),
-                //         integer
-                // },
                 selectedGroups: {required},
                 city: {required},
                 selectedDocument: {required},
@@ -379,18 +377,8 @@ export default {
                 this.$v.$touch()
                 return
             }
-            console.log('ok go')
+            this.$v.$reset
             this.isSuccessfull = true
-        },
-        getPattern(firstNumber, length) {
-            let arr = [firstNumber]
-            for (let i = 1; i < length; i++) {
-                arr.push("x")
-            }
-            return arr.join('')
-        },
-        closeMessage() {
-            this.isSuccessfull = false
             this.form.firstName = ""
             this.form.lastName = ""
             this.form.patronymic = ""
@@ -411,6 +399,16 @@ export default {
             this.form.number = ""
             this.form.docOrgan = ""
             this.form.docDate = ""
+        },
+        getPattern(firstNumber, length) {
+            let arr = [firstNumber]
+            for (let i = 1; i < length; i++) {
+                arr.push("x")
+            }
+            return arr.join('')
+        },
+        closePopup() {
+            this.isSuccessfull = false
         }
     }
 
@@ -420,13 +418,6 @@ export default {
 <style scoped lang="scss">
 
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
-
-$main-color: #00B8AC;
-$text-color: #757575;
-$input-border-color: #d5dbd9;
-$btn-back-color: #ffd658;
-$background-color: #fff;
-$error-color: #FF5E54;
 
 .wrapper {
     max-width: 700px;
@@ -451,7 +442,6 @@ $error-color: #FF5E54;
             padding: 15px 10px;
             legend {
                 font-size: 18px;
-                // font-weight: 700;
                 text-transform: uppercase;
                 color: $text-color;
             }
@@ -460,7 +450,7 @@ $error-color: #FF5E54;
                 display: flex;
                 align-items: center;
                 label {
-                    min-width: 200px;
+                    width: 40%;
                     color: $text-color;
                     margin-right: 10px;
                     font-size: 18px;
@@ -472,7 +462,7 @@ $error-color: #FF5E54;
                     }
                 }
                 .input {
-                    width: 100%;
+                    width: 60%;
                     outline: none;
                     border: 1px solid $input-border-color;
                     padding: 8px 10px;
@@ -485,7 +475,7 @@ $error-color: #FF5E54;
                 }
                 .custom-select {
                     position: relative;
-                    width: 100%;
+                    width: 60%;
                     select {
                         -webkit-appearance: none;
                         appearance: none;
@@ -541,42 +531,6 @@ $error-color: #FF5E54;
             margin-bottom: 3px;
         }
     }
-    .message {
-        display: flex;
-        max-width: 400px;
-        height: 150px;
-        position: absolute;
-        z-index: 9;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        margin: auto;
-        flex-direction: column;
-        justify-content: space-between;
-        align-items: center;
-        padding: 30px 50px;
-        border: solid 2px $main-color;
-        background: $background-color;
-        box-shadow: 10px 10px 20px rgba(0,0,0,0.5);
-        button {
-            width: 100%;
-            padding: 8px 10px;
-            font-size: 16px;
-            font-weight: 700;
-            text-transform: uppercase;
-            border: none;
-            margin-top: 10px;
-            background: $main-color;
-            color: $background-color;
-            border-radius: 3px;
-            cursor: pointer;
-            outline: none;
-            &:hover {
-                background: $btn-back-color;
-            }
-        }
-    }
 }
 @media (max-width: 520px) {
     .wrapper {
@@ -586,7 +540,14 @@ $error-color: #FF5E54;
                     flex-direction: column;
                     align-items: flex-start;
                     label {
+                        width: 100%;
                         margin-bottom: 5px;
+                    }
+                    .input {
+                        width: 100%;
+                    }
+                    .custom-select {
+                        width: 100%;
                     }
                 }
                 .check-field {
@@ -598,7 +559,7 @@ $error-color: #FF5E54;
             }
         }
         .message {
-            width: 80%;
+            width: 70%;
             h2 {
                 text-align: center;
             }
