@@ -2,7 +2,7 @@
   <div class="wrapper">
       <h1>Регистрация нового клиента</h1>
       <Popup
-
+        v-if="isSuccessfull"
         @closeElement="closePopup"
       >
       <h3>Клиент "{{form.lastName}} {{form.firstName}}" добавлен</h3>
@@ -377,8 +377,18 @@ export default {
                 this.$v.$touch()
                 return
             }
-            this.$v.$reset
             this.isSuccessfull = true
+        },
+        getPattern(firstNumber, length) {
+            let arr = [firstNumber]
+            for (let i = 1; i < length; i++) {
+                arr.push("x")
+            }
+            return arr.join('')
+        },
+        closePopup() {
+            this.isSuccessfull = false
+            this.$v.$reset()
             this.form.firstName = ""
             this.form.lastName = ""
             this.form.patronymic = ""
@@ -399,16 +409,6 @@ export default {
             this.form.number = ""
             this.form.docOrgan = ""
             this.form.docDate = ""
-        },
-        getPattern(firstNumber, length) {
-            let arr = [firstNumber]
-            for (let i = 1; i < length; i++) {
-                arr.push("x")
-            }
-            return arr.join('')
-        },
-        closePopup() {
-            this.isSuccessfull = false
         }
     }
 
